@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(target){event.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'})}
   }));
 
-  // Pampadu uses the same #ppdwiOffer identifier. Each widget is therefore
-  // isolated in its own local document, preserving Pampadu's official embed code.
+  // Pampadu uses the same #ppdwiOffer identifier. Each working offer is isolated
+  // in its own local document, preserving Pampadu's official embed code.
   const widgetMap={
     'ОСАГО':'widgets/osago.html',
     'КАСКО':'widgets/kasko.html',
@@ -31,8 +31,23 @@ document.addEventListener('DOMContentLoaded',()=>{
     const title=card.querySelector('h3')?.textContent.trim().toLowerCase();
     const src=widgetMap[title];
     const frame=card.querySelector('.pampadu-widget iframe');
-    if(src&&frame) frame.src=src;
+    if(src){
+      if(frame) frame.src=src;
+      // Make the working offer directly accessible from the main page.
+      if(!card.querySelector('.offer-link')){
+        const link=document.createElement('a');
+        link.className='btn btn-primary offer-link';
+        link.href=src;
+        link.textContent='Открыть оффер →';
+        link.setAttribute('aria-label',`Открыть оффер ${title}`);
+        card.appendChild(link);
+      }
+    }
   });
+
+  // The hero's OSAGO call-to-action should open the working offer directly.
+  const heroOffer=document.querySelector('.hero-card a[href="#widget-osago"]');
+  if(heroOffer){heroOffer.href=widgetMap['ОСАГО'];heroOffer.textContent='Рассчитать ОСАГО →';}
 
   const phoneInputs=document.querySelectorAll('input[name="phone"]');
   phoneInputs.forEach(input=>input.addEventListener('input',()=>{
