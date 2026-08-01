@@ -18,27 +18,26 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(target){event.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'})}
   }));
 
+  // Pampadu uses the same #ppdwiOffer identifier. Each widget is therefore
+  // isolated in its own local document, preserving Pampadu's official embed code.
+  const widgetMap={
+    'ОСАГО':'widgets/osago.html',
+    'КАСКО':'widgets/kasko.html',
+    'жизнь и здоровье':'widgets/life.html',
+    'подбор персонала':'widgets/recruitment.html',
+    'банковские продукты':'widgets/banking.html'
+  };
+  document.querySelectorAll('.product-card').forEach(card=>{
+    const title=card.querySelector('h3')?.textContent.trim().toLowerCase();
+    const src=widgetMap[title];
+    const frame=card.querySelector('.pampadu-widget iframe');
+    if(src&&frame) frame.src=src;
+  });
+
   const phoneInputs=document.querySelectorAll('input[name="phone"]');
   phoneInputs.forEach(input=>input.addEventListener('input',()=>{
     let value=input.value.replace(/[^\d+]/g,'');
     if(value.length>0&&!value.startsWith('+'))value='+'+value;
     input.value=value.slice(0,18);
   }));
-
-  const form=document.querySelector('.lead-form');
-  if(form){
-    form.addEventListener('submit',event=>{
-      event.preventDefault();
-      const button=form.querySelector('button');
-      const note=form.querySelector('.form-note');
-      const oldText=button.textContent;
-      button.disabled=true;button.textContent='Подготавливаем заявку…';
-      setTimeout(()=>{
-        form.reset();
-        button.textContent='Заявка готова';
-        if(note)note.classList.add('show');
-        setTimeout(()=>{button.textContent=oldText;button.disabled=false},3500);
-      },700);
-    });
-  }
 });
